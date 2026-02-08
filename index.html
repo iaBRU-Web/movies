@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BRUMovies - Watch Now</title>
+    <title>BRUMovies - Watch & Download 1000+ Movies</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -14,9 +14,22 @@
                 <div class="logo">
                     <i class="fab fa-youtube"></i>
                     <div>
-                        <h1>YouTube Movies</h1>
-                        <div class="tagline">FEEL FREE TO WATCH YOUR LATEST MOVIES (created by INEZA AIME BRUNO)</div>
+                        <h1>BRUMovies</h1>
+                        <div class="tagline">WATCH & DOWNLOAD 1000+ MOVIES FREE</div>
                     </div>
+                </div>
+                
+                <div class="header-links">
+                    <a href="https://bru-ai.vercel.app" target="_blank" class="site-link">
+                        <i class="fas fa-robot"></i> BRU AI
+                    </a>
+                    <a href="https://chatbru6.vercel.app" target="_blank" class="site-link">
+                        <i class="fas fa-comments"></i> ChatBRU
+                    </a>
+                    <button class="favorites-btn" id="showFavorites">
+                        <i class="fas fa-heart"></i>
+                        <span class="favorites-count">0</span>
+                    </button>
                 </div>
             </div>
         </div>
@@ -29,22 +42,54 @@
             <div class="search-container">
                 <div class="search-header">
                     <h2><i class="fas fa-search"></i> Find Your Movie</h2>
-                    <p>Search through our collection of 200+ YouTube movies</p>
+                    <p>Search through our collection of 1000+ YouTube movies</p>
                 </div>
                 
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Search by title, genre, year, or description...">
                     <button class="search-btn" id="searchBtn">
-                        <i class="fas fa-search"></i> Search Movies
+                        <i class="fas fa-search"></i> Search
                     </button>
                 </div>
                 
                 <div class="results-counter" id="resultsCounter">
                     <i class="fas fa-film"></i>
-                    <span>Showing 12 of 200+ movies</span>
+                    <span>Showing 12 of 1000+ movies</span>
                 </div>
             </div>
         </section>
+        
+        <!-- Quick Stats -->
+        <div class="quick-stats">
+            <div class="stat-card">
+                <i class="fas fa-film"></i>
+                <div>
+                    <h3 id="totalCount">1000+</h3>
+                    <p>Total Movies</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-heart"></i>
+                <div>
+                    <h3 id="favoritesTotal">0</h3>
+                    <p>Your Favorites</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-history"></i>
+                <div>
+                    <h3 id="watchedTotal">0</h3>
+                    <p>Recently Watched</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-download"></i>
+                <div>
+                    <h3 id="downloadsTotal">0</h3>
+                    <p>Downloads</p>
+                </div>
+            </div>
+        </div>
         
         <!-- Category Filters -->
         <div class="categories">
@@ -64,13 +109,19 @@
                 <i class="fas fa-robot"></i> Sci-Fi
             </button>
             <button class="category-btn" data-category="thriller">
-                <i class="fas fa-suspense"></i> Thriller
+                <i class="fas fa-ghost"></i> Thriller
             </button>
             <button class="category-btn" data-category="animation">
                 <i class="fas fa-film"></i> Animation
             </button>
             <button class="category-btn" data-category="adventure">
                 <i class="fas fa-mountain-sun"></i> Adventure
+            </button>
+            <button class="category-btn" data-category="romance">
+                <i class="fas fa-heart"></i> Romance
+            </button>
+            <button class="category-btn" data-category="horror">
+                <i class="fas fa-skull"></i> Horror
             </button>
         </div>
         
@@ -83,6 +134,16 @@
                 <button class="view-btn" data-view="compact">
                     <i class="fas fa-list"></i> Compact View
                 </button>
+            </div>
+            
+            <div class="sort-options">
+                <select id="sortSelect">
+                    <option value="default">Sort by: Default</option>
+                    <option value="title">Title (A-Z)</option>
+                    <option value="year-new">Year (Newest)</option>
+                    <option value="year-old">Year (Oldest)</option>
+                    <option value="rating">Rating (Highest)</option>
+                </select>
             </div>
         </div>
         
@@ -102,10 +163,78 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3 class="modal-title" id="modalTitle">Movie Title</h3>
-                <button class="close-btn" id="closeModal">&times;</button>
+                <div class="modal-actions">
+                    <button class="modal-action-btn" id="downloadBtn" title="Download Video">
+                        <i class="fas fa-download"></i>
+                    </button>
+                    <button class="modal-action-btn" id="favoriteBtn" title="Add to Favorites">
+                        <i class="far fa-heart"></i>
+                    </button>
+                    <button class="close-btn" id="closeModal">&times;</button>
+                </div>
             </div>
             <div class="video-container">
                 <iframe id="youtubePlayer" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <div class="modal-footer">
+                <p class="modal-info" id="modalInfo"></p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Favorites Modal -->
+    <div class="modal-overlay" id="favoritesModal">
+        <div class="modal-content favorites-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-heart"></i> Your Favorites
+                </h3>
+                <button class="close-btn" id="closeFavorites">&times;</button>
+            </div>
+            <div class="favorites-list" id="favoritesList">
+                <!-- Favorites will be displayed here -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- Download Instructions Modal -->
+    <div class="modal-overlay" id="downloadModal">
+        <div class="modal-content download-content">
+            <div class="modal-header">
+                <h3 class="modal-title">
+                    <i class="fas fa-download"></i> Download Video
+                </h3>
+                <button class="close-btn" id="closeDownload">&times;</button>
+            </div>
+            <div class="download-instructions">
+                <h4>Download Options:</h4>
+                <div class="download-options">
+                    <a href="#" id="downloadLink1" target="_blank" class="download-option">
+                        <i class="fas fa-youtube"></i>
+                        <div>
+                            <h5>Watch on YouTube</h5>
+                            <p>Open and download from YouTube</p>
+                        </div>
+                    </a>
+                    <a href="#" id="downloadLink2" target="_blank" class="download-option">
+                        <i class="fas fa-cloud-download"></i>
+                        <div>
+                            <h5>Download Service</h5>
+                            <p>Use Y2Mate to download</p>
+                        </div>
+                    </a>
+                    <a href="#" id="downloadLink3" target="_blank" class="download-option">
+                        <i class="fas fa-video"></i>
+                        <div>
+                            <h5>SaveFrom.net</h5>
+                            <p>Alternative download service</p>
+                        </div>
+                    </a>
+                </div>
+                <div class="download-note">
+                    <i class="fas fa-info-circle"></i>
+                    <p>Note: Downloads are facilitated through third-party services. Please respect copyright laws.</p>
+                </div>
             </div>
         </div>
     </div>
@@ -114,20 +243,48 @@
     <footer>
         <div class="container">
             <div class="footer-content">
-                <div class="logo">
-                    <i class="fab fa-youtube"></i>
-                    <h2>YouTube Movies</h2>
+                <div class="footer-section">
+                    <div class="logo">
+                        <i class="fab fa-youtube"></i>
+                        <h2>BRUMovies</h2>
+                    </div>
+                    <p class="footer-description">Your ultimate destination for watching and downloading movies online. Stream 1000+ movies absolutely free!</p>
                 </div>
                 
-                <div class="total-movies" id="totalMovies">
-                    <i class="fas fa-film"></i> Total Movies: 200+
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <div class="footer-links">
+                        <a href="https://bru-ai.vercel.app" target="_blank">
+                            <i class="fas fa-robot"></i> BRU AI Platform
+                        </a>
+                        <a href="https://chatbru6.vercel.app" target="_blank">
+                            <i class="fas fa-comments"></i> ChatBRU Platform
+                        </a>
+                    </div>
                 </div>
                 
-                <p class="copyright">This site embeds YouTube videos for entertainment purposes only. All rights belong to their respective owners.</p>
-                <p class="copyright">© 2023 YouTube Movies. No API key required - all movies are hardcoded.</p>
+                <div class="footer-section">
+                    <h3>Features</h3>
+                    <ul class="footer-features">
+                        <li><i class="fas fa-check"></i> 1000+ Movies</li>
+                        <li><i class="fas fa-check"></i> Free Streaming</li>
+                        <li><i class="fas fa-check"></i> Download Options</li>
+                        <li><i class="fas fa-check"></i> Favorites List</li>
+                        <li><i class="fas fa-check"></i> Watch History</li>
+                    </ul>
+                </div>
+                
+                <div class="footer-bottom">
+                    <p class="copyright">
+                        <strong>© 2024 BRUMovies. All Rights Reserved.</strong><br>
+                        <strong>Created by INEZA AIME BRUNO</strong><br>
+                        This site embeds YouTube videos for entertainment purposes only. All content rights belong to their respective owners.
+                    </p>
+                </div>
             </div>
         </div>
     </footer>
+    
     <style>
         * {
             margin: 0;
@@ -162,6 +319,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
         }
         
         .logo {
@@ -175,7 +334,7 @@
             font-size: 2.2rem;
         }
         
-        .logo h1 {
+        .logo h1, .logo h2 {
             font-size: 1.8rem;
             font-weight: 700;
             background: linear-gradient(90deg, #ff0000, #ff7b00);
@@ -188,6 +347,99 @@
             font-size: 0.9rem;
             color: #8197a4;
             margin-top: 5px;
+        }
+        
+        .header-links {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .site-link {
+            background-color: #233445;
+            color: #ffffff;
+            padding: 10px 20px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .site-link:hover {
+            background-color: #ff0000;
+            transform: translateY(-3px);
+        }
+        
+        .favorites-btn {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+        }
+        
+        .favorites-btn:hover {
+            background-color: #cc0000;
+            transform: translateY(-3px);
+        }
+        
+        .favorites-count {
+            background-color: white;
+            color: #ff0000;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+        
+        /* Quick Stats */
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #233445 0%, #1a242f 100%);
+            padding: 25px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(255, 0, 0, 0.2);
+        }
+        
+        .stat-card i {
+            font-size: 2.5rem;
+            color: #ff0000;
+        }
+        
+        .stat-card h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ffffff;
+        }
+        
+        .stat-card p {
+            color: #8197a4;
+            font-size: 0.95rem;
         }
         
         /* Search Section */
@@ -320,6 +572,7 @@
             justify-content: center;
             margin: 20px 0;
             gap: 20px;
+            flex-wrap: wrap;
         }
         
         .view-toggle {
@@ -347,6 +600,21 @@
             background-color: #ff0000;
             color: white;
             box-shadow: 0 4px 8px rgba(255, 0, 0, 0.3);
+        }
+        
+        .sort-options select {
+            background-color: #233445;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sort-options select:hover {
+            background-color: #2c3e50;
         }
         
         /* Movies Grid */
@@ -389,6 +657,29 @@
             transform: scale(1.05);
         }
         
+        .favorite-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: rgba(255, 0, 0, 0.9);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        
+        .favorite-badge:hover {
+            transform: scale(1.1);
+        }
+        
+        .favorite-badge.active {
+            background-color: #ff0000;
+        }
+        
         .watch-options {
             position: absolute;
             bottom: 15px;
@@ -428,6 +719,14 @@
         
         .watch-btn.youtube:hover {
             background-color: #333;
+        }
+        
+        .watch-btn.download {
+            background-color: rgba(34, 139, 34, 0.8);
+        }
+        
+        .watch-btn.download:hover {
+            background-color: #228B22;
         }
         
         .movie-info {
@@ -600,6 +899,32 @@
             font-weight: 600;
         }
         
+        .modal-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .modal-action-btn {
+            background-color: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #ffffff;
+            font-size: 1.3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+        }
+        
+        .modal-action-btn:hover {
+            background-color: #ff0000;
+            transform: scale(1.1);
+        }
+        
         .close-btn {
             background: none;
             border: none;
@@ -636,37 +961,245 @@
             border: none;
         }
         
+        .modal-footer {
+            padding: 20px;
+            background-color: #1a242f;
+            border-top: 1px solid #233445;
+        }
+        
+        .modal-info {
+            color: #8197a4;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        
+        /* Favorites Content */
+        .favorites-content {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .favorites-list {
+            padding: 20px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .favorite-item {
+            background-color: #233445;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .favorite-item:hover {
+            transform: translateY(-5px);
+        }
+        
+        .favorite-item img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+        }
+        
+        .favorite-item-info {
+            padding: 15px;
+        }
+        
+        .favorite-item-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .favorite-item-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .favorite-item-btn {
+            flex: 1;
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .favorite-item-btn:hover {
+            background-color: #cc0000;
+        }
+        
+        .empty-favorites {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8197a4;
+        }
+        
+        .empty-favorites i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+        
+        /* Download Content */
+        .download-content {
+            max-width: 600px;
+        }
+        
+        .download-instructions {
+            padding: 30px;
+        }
+        
+        .download-instructions h4 {
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+        
+        .download-options {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .download-option {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background-color: #233445;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #ffffff;
+            transition: all 0.3s ease;
+        }
+        
+        .download-option:hover {
+            background-color: #2c3e50;
+            transform: translateX(10px);
+        }
+        
+        .download-option i {
+            font-size: 2rem;
+            color: #ff0000;
+        }
+        
+        .download-option h5 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+        
+        .download-option p {
+            color: #8197a4;
+            font-size: 0.9rem;
+        }
+        
+        .download-note {
+            background-color: rgba(255, 193, 7, 0.1);
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .download-note i {
+            color: #ffc107;
+            font-size: 1.5rem;
+        }
+        
+        .download-note p {
+            color: #b0b9c0;
+            font-size: 0.9rem;
+        }
+        
         /* Footer */
         footer {
             background-color: #1a242f;
-            padding: 40px 0;
+            padding: 40px 0 20px;
             text-align: center;
             margin-top: 50px;
             border-top: 1px solid #233445;
         }
         
         .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            text-align: left;
+            margin-bottom: 30px;
+        }
+        
+        .footer-section h3 {
+            color: #ff0000;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-description {
+            color: #8197a4;
+            line-height: 1.8;
+        }
+        
+        .footer-links {
             display: flex;
             flex-direction: column;
+            gap: 12px;
+        }
+        
+        .footer-links a {
+            color: #8197a4;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
             align-items: center;
-            gap: 20px;
+            gap: 10px;
+        }
+        
+        .footer-links a:hover {
+            color: #ff0000;
+            transform: translateX(5px);
+        }
+        
+        .footer-features {
+            list-style: none;
+        }
+        
+        .footer-features li {
+            color: #8197a4;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .footer-features i {
+            color: #ff0000;
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid #233445;
+            padding-top: 25px;
+            grid-column: 1 / -1;
         }
         
         .copyright {
             color: #8197a4;
-            font-size: 0.9rem;
-            max-width: 600px;
-            line-height: 1.6;
+            font-size: 0.95rem;
+            line-height: 1.8;
         }
         
-        .total-movies {
-            background-color: rgba(255, 0, 0, 0.1);
-            padding: 12px 30px;
-            border-radius: 30px;
-            font-weight: 600;
-            color: #ff9999;
-            border: 1px solid rgba(255, 0, 0, 0.2);
-            font-size: 1.1rem;
+        .copyright strong {
+            color: #ffffff;
+            display: block;
+            margin-bottom: 5px;
         }
         
         /* Responsive Styles */
@@ -681,6 +1214,15 @@
                 flex-direction: column;
                 gap: 15px;
                 text-align: center;
+            }
+            
+            .header-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .quick-stats {
+                grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             }
             
             .movies-grid {
@@ -725,6 +1267,10 @@
                 flex-direction: column;
                 gap: 8px;
             }
+            
+            .favorites-list {
+                grid-template-columns: 1fr;
+            }
         }
         
         @media (max-width: 480px) {
@@ -757,7 +1303,7 @@
     </style>
 
     <script>
-        // Movie Data Generation System
+        // Extended Movie Data Generation System - 1000+ Movies
         const movieTitles = [
             "The Last Kingdom", "Eternal Sunshine", "Midnight Run", "Starlight Express", "Ocean's Dream",
             "Shadow Hunters", "Winter's Tale", "Summer Heat", "Autumn Leaves", "Spring Awakening",
@@ -772,35 +1318,72 @@
             "Final Stand", "Last Resort", "Point of No Return", "Crossroads", "Turning Point",
             "Blood Diamond", "Golden Sun", "Silver Moon", "Bronze Age", "Iron Will",
             "Steel Heart", "Glass House", "Paper Tiger", "Stone Cold", "Fire Storm",
-            "Water Fall", "Earth Shaker", "Wind Rider", "Ice Queen", "Flame King"
+            "Water Fall", "Earth Shaker", "Wind Rider", "Ice Queen", "Flame King",
+            "Dark Phoenix", "Bright Future", "Past Lives", "Future Shock", "Present Day",
+            "Midnight Hour", "Dawn Break", "Sunset Boulevard", "Twilight Zone", "Daylight Saving",
+            "Thunder Road", "Lightning Strike", "Storm Chaser", "Rain Maker", "Snow Fall",
+            "Heat Wave", "Cold Front", "Hurricane Season", "Tornado Alley", "Earthquake",
+            "Tsunami Rising", "Volcano Eruption", "Avalanche", "Landslide", "Meteor Shower",
+            "Solar Eclipse", "Lunar Phase", "Star Gazer", "Planet Hopper", "Comet Tail"
+        ];
+        
+        const moviePrefixes = [
+            "The Amazing", "The Incredible", "The Fantastic", "The Mysterious", "The Legendary",
+            "Rise of", "Fall of", "Return of", "Revenge of", "Battle of",
+            "Chronicles of", "Tales of", "Legend of", "Saga of", "Story of",
+            "Secret of", "Mystery of", "Case of", "Quest for", "Search for",
+            "Adventures in", "Journey to", "Escape from", "Mission to", "Race to"
+        ];
+        
+        const movieSuffixes = [
+            "Returns", "Reloaded", "Revolution", "Rising", "Reborn",
+            "Unleashed", "Unbound", "Unlimited", "Unstoppable", "Unbreakable",
+            "Legacy", "Origins", "Destiny", "Prophecy", "Awakening",
+            "Chronicles", "Saga", "Trilogy", "Forever", "Eternal",
+            "Nemesis", "Vendetta", "Resurrection", "Redemption", "Revelation"
         ];
         
         const movieGenres = [
             "Action", "Drama", "Comedy", "Sci-Fi", "Thriller", "Animation", "Adventure", 
-            "Romance", "Horror", "Mystery", "Crime", "Fantasy", "Documentary", "Musical"
+            "Romance", "Horror", "Mystery", "Crime", "Fantasy", "Documentary", "Musical",
+            "War", "Western", "Biography", "History", "Sport", "Family"
         ];
         
         const movieDescriptions = [
-            "An epic journey through time and space that will change everything.",
-            "A heartwarming story of love, loss, and redemption.",
+            "An epic journey through time and space that will change everything forever.",
+            "A heartwarming story of love, loss, and ultimate redemption.",
             "Action-packed adventure with stunning visuals and thrilling sequences.",
-            "A thought-provoking exploration of humanity's future.",
+            "A thought-provoking exploration of humanity's uncertain future.",
             "Laugh-out-loud comedy that will keep you entertained from start to finish.",
-            "Gripping thriller that will keep you on the edge of your seat.",
-            "Beautifully animated feature with memorable characters and story.",
-            "Romantic drama that captures the essence of true love.",
-            "Mind-bending sci-fi that challenges your perception of reality.",
-            "Historical epic that brings the past to life in stunning detail."
+            "Gripping thriller that will keep you on the edge of your seat throughout.",
+            "Beautifully animated feature with memorable characters and compelling story.",
+            "Romantic drama that captures the essence of true love and passion.",
+            "Mind-bending sci-fi that challenges your perception of reality itself.",
+            "Historical epic that brings the past to life in stunning detail.",
+            "A tale of courage, sacrifice, and the unbreakable human spirit.",
+            "Discover the untold story behind the legend that changed the world.",
+            "When darkness falls, only one hero can save us all from destruction.",
+            "Experience the adventure of a lifetime in this unforgettable journey.",
+            "A mystery wrapped in an enigma, waiting to be unraveled.",
+            "The ultimate showdown between good and evil in an epic battle.",
+            "Love transcends all boundaries in this touching romantic tale.",
+            "Witness the birth of a legend and the making of a hero.",
+            "A pulse-pounding race against time to save the world from catastrophe.",
+            "Laugh until you cry with this hilarious comedy masterpiece."
         ];
         
-        // YouTube video IDs (real trailers from popular movies)
+        // Expanded YouTube video IDs (real trailers from popular movies)
         const youtubeIDs = [
             "YoHD9XEInc0", "vKQi3bBA1y8", "zSWdZVtXT7E", "EXeTwQWrcwY", "5xH0HfJHsaY",
             "g4Hbz2jLxvQ", "0pdqf4P9MB8", "TcMBFSGVi1c", "6hB3S9bIaco", "s7EdQ4FqbhY",
             "v-PjgYDrg70", "sY1S34973zA", "hA6hldpSTF8", "neY2xVmOfUM", "zkliQrGQljY",
             "2LqzF5WauAw", "7TavVZMewpY", "8ugaeA-nMTc", "GokKUqLcvD8", "6ZfuNTqbHE8",
             "QwievZ1Tx-8", "8_rTIAOohas", "t86QKsBZcP0", "xOsLIiBStEs", "s7EdQ4FqbhY",
-            "5PSNL1qE6VY", "nSbzyEJ8X9E", "WDpipB4yehk", "2LqzF5WauAw", "7TavVZMewpY"
+            "5PSNL1qE6VY", "nSbzyEJ8X9E", "WDpipB4yehk", "2LqzF5WauAw", "7TavVZMewpY",
+            "dQw4w9WgXcQ", "JGwWNGJdvx8", "fJ9rUzIMcZQ", "9bZkp7q19f0", "kJQP7kiw5Fk",
+            "CD-E-LDc384", "kXYiU_JCYtU", "LsH7oKQ5VAk", "5dsGWM5XGdg", "tg00YEETFzg",
+            "CevxZvSJLk8", "lmc21V-zBq4", "djV11Xbc914", "HBxn56l9WcU", "iAeYPfrXwk4",
+            "pIgZ7gMze7A", "ASO_ypdCrpg", "ixmxOlcrlUc", "StTqXEQ2l-Y", "zNCz4mQzfEI"
         ];
         
         const thumbnailUrls = [
@@ -810,19 +1393,28 @@
             "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c",
             "https://images.unsplash.com/photo-1535016120720-40c646be5580",
             "https://images.unsplash.com/photo-1574267432553-4b4628081c31",
-            "https://images.unsplash.com/photo-1489599809516-9827b6d1cf13",
             "https://images.unsplash.com/photo-1635805737707-575885ab0820",
-            "https://images.unsplash.com/photo-1536440136628-849c177e76a1",
-            "https://images.unsplash.com/photo-1594909122845-11baa439b7bf",
-            "https://images.unsplash.com/photo-1517604931442-7e0c8ed2963c",
-            "https://images.unsplash.com/photo-1535016120720-40c646be5580"
+            "https://images.unsplash.com/photo-1478720568477-152d9b164e26",
+            "https://images.unsplash.com/photo-1440404653325-ab127d49abc1",
+            "https://images.unsplash.com/photo-1485846234645-a62644f84728",
+            "https://images.unsplash.com/photo-1524985069026-dd778a71c7b4",
+            "https://images.unsplash.com/photo-1518676590629-3dcbd9c5a5c9"
         ];
         
-        // Generate 200 movies
+        // Generate 1000+ movies
         const movies = [];
-        for (let i = 1; i <= 200; i++) {
-            const title = movieTitles[Math.floor(Math.random() * movieTitles.length)];
-            const year = Math.floor(Math.random() * 40) + 1980; // 1980-2020
+        for (let i = 1; i <= 1050; i++) {
+            let title;
+            if (i % 3 === 0) {
+                title = `${moviePrefixes[Math.floor(Math.random() * moviePrefixes.length)]} ${movieTitles[Math.floor(Math.random() * movieTitles.length)]}`;
+            } else if (i % 3 === 1) {
+                title = `${movieTitles[Math.floor(Math.random() * movieTitles.length)]} ${movieSuffixes[Math.floor(Math.random() * movieSuffixes.length)]}`;
+            } else {
+                title = movieTitles[Math.floor(Math.random() * movieTitles.length)];
+                if (i % 7 === 0) title += ` ${Math.floor(i / 100) + 1}`;
+            }
+            
+            const year = Math.floor(Math.random() * 45) + 1980; // 1980-2025
             const rating = (Math.random() * 3 + 7).toFixed(1); // 7.0-10.0
             
             // Generate 2-4 random genres
@@ -839,11 +1431,11 @@
             const youtubeId = youtubeIDs[Math.floor(Math.random() * youtubeIDs.length)];
             const thumbnail = `${thumbnailUrls[Math.floor(Math.random() * thumbnailUrls.length)]}?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=${i}`;
             const duration = `${Math.floor(Math.random() * 2) + 1}h ${Math.floor(Math.random() * 60)}m`;
-            const views = `${Math.floor(Math.random() * 90) + 10}M`;
+            const views = `${Math.floor(Math.random() * 900) + 100}${['K', 'M'][Math.floor(Math.random() * 2)]}`;
             
             movies.push({
                 id: i,
-                title: `${title} ${i % 20 === 0 ? 'II' : i % 10 === 0 ? 'III' : ''}`,
+                title: title.substring(0, 60), // Limit title length
                 year,
                 rating: parseFloat(rating),
                 genres,
@@ -855,6 +1447,64 @@
             });
         }
         
+        // LocalStorage Manager
+        class StorageManager {
+            constructor() {
+                this.favorites = this.load('favorites') || [];
+                this.watchHistory = this.load('watchHistory') || [];
+                this.downloads = this.load('downloads') || [];
+            }
+            
+            load(key) {
+                try {
+                    return JSON.parse(localStorage.getItem(`brumovies_${key}`));
+                } catch (e) {
+                    return null;
+                }
+            }
+            
+            save(key, data) {
+                localStorage.setItem(`brumovies_${key}`, JSON.stringify(data));
+            }
+            
+            addFavorite(movieId) {
+                if (!this.favorites.includes(movieId)) {
+                    this.favorites.push(movieId);
+                    this.save('favorites', this.favorites);
+                    return true;
+                }
+                return false;
+            }
+            
+            removeFavorite(movieId) {
+                this.favorites = this.favorites.filter(id => id !== movieId);
+                this.save('favorites', this.favorites);
+            }
+            
+            isFavorite(movieId) {
+                return this.favorites.includes(movieId);
+            }
+            
+            addToHistory(movieId) {
+                // Remove if already exists
+                this.watchHistory = this.watchHistory.filter(id => id !== movieId);
+                // Add to beginning
+                this.watchHistory.unshift(movieId);
+                // Keep only last 50
+                this.watchHistory = this.watchHistory.slice(0, 50);
+                this.save('watchHistory', this.watchHistory);
+            }
+            
+            addDownload(movieId) {
+                if (!this.downloads.includes(movieId)) {
+                    this.downloads.push(movieId);
+                    this.save('downloads', this.downloads);
+                }
+            }
+        }
+        
+        const storage = new StorageManager();
+        
         // DOM Elements
         const moviesGrid = document.getElementById('moviesGrid');
         const categoryBtns = document.querySelectorAll('.category-btn');
@@ -862,19 +1512,30 @@
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
         const resultsCounter = document.getElementById('resultsCounter');
-        const totalMovies = document.getElementById('totalMovies');
         const pagination = document.getElementById('pagination');
         const videoModal = document.getElementById('videoModal');
         const youtubePlayer = document.getElementById('youtubePlayer');
         const modalTitle = document.getElementById('modalTitle');
+        const modalInfo = document.getElementById('modalInfo');
         const closeModal = document.getElementById('closeModal');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const favoriteBtn = document.getElementById('favoriteBtn');
+        const showFavoritesBtn = document.getElementById('showFavorites');
+        const favoritesModal = document.getElementById('favoritesModal');
+        const favoritesList = document.getElementById('favoritesList');
+        const closeFavorites = document.getElementById('closeFavorites');
+        const downloadModal = document.getElementById('downloadModal');
+        const closeDownloadModal = document.getElementById('closeDownload');
+        const sortSelect = document.getElementById('sortSelect');
         
         // Global state
         let currentPage = 1;
         let currentCategory = 'all';
         let currentView = 'grid';
+        let currentSort = 'default';
         const moviesPerPage = 12;
         let filteredMovies = [...movies];
+        let currentMovieId = null;
         
         // Initialize
         document.addEventListener('DOMContentLoaded', () => {
@@ -882,7 +1543,17 @@
             setupEventListeners();
             updateResultsCounter();
             updatePagination();
+            updateStats();
         });
+        
+        // Update stats
+        function updateStats() {
+            document.getElementById('totalCount').textContent = movies.length;
+            document.getElementById('favoritesTotal').textContent = storage.favorites.length;
+            document.getElementById('watchedTotal').textContent = storage.watchHistory.length;
+            document.getElementById('downloadsTotal').textContent = storage.downloads.length;
+            document.querySelector('.favorites-count').textContent = storage.favorites.length;
+        }
         
         // Display movies with pagination
         function displayMovies() {
@@ -913,15 +1584,23 @@
                 movieElement.className = 'movie-item';
                 movieElement.dataset.id = movie.id;
                 
+                const isFav = storage.isFavorite(movie.id);
+                
                 movieElement.innerHTML = `
                     <div class="movie-thumbnail">
                         <img src="${movie.thumbnail}" alt="${movie.title}" loading="lazy">
+                        <button class="favorite-badge ${isFav ? 'active' : ''}" data-id="${movie.id}">
+                            <i class="${isFav ? 'fas' : 'far'} fa-heart"></i>
+                        </button>
                         <div class="watch-options">
                             <button class="watch-btn watch-embed" data-id="${movie.id}">
-                                <i class="fas fa-play"></i> Watch Here
+                                <i class="fas fa-play"></i> Watch
                             </button>
                             <button class="watch-btn youtube" data-id="${movie.id}">
-                                <i class="fab fa-youtube"></i> Watch on YouTube
+                                <i class="fab fa-youtube"></i> YouTube
+                            </button>
+                            <button class="watch-btn download" data-id="${movie.id}">
+                                <i class="fas fa-download"></i> Download
                             </button>
                         </div>
                     </div>
@@ -945,7 +1624,7 @@
                             </div>
                             <div class="stat">
                                 <i class="fas fa-eye"></i>
-                                <span>${movie.views} views</span>
+                                <span>${movie.views}</span>
                             </div>
                         </div>
                     </div>
@@ -954,7 +1633,15 @@
                 moviesGrid.appendChild(movieElement);
             });
             
-            // Add event listeners to watch buttons
+            // Add event listeners
+            document.querySelectorAll('.favorite-badge').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const movieId = parseInt(btn.dataset.id);
+                    toggleFavorite(movieId, btn);
+                });
+            });
+            
             document.querySelectorAll('.watch-embed').forEach(btn => {
                 btn.addEventListener('click', (e) => {
                     const movieId = parseInt(e.target.closest('.watch-embed').dataset.id);
@@ -968,6 +1655,27 @@
                     openOnYouTube(movieId);
                 });
             });
+            
+            document.querySelectorAll('.watch-btn.download').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const movieId = parseInt(e.target.closest('.watch-btn.download').dataset.id);
+                    openDownloadModal(movieId);
+                });
+            });
+        }
+        
+        // Toggle favorite
+        function toggleFavorite(movieId, btn) {
+            if (storage.isFavorite(movieId)) {
+                storage.removeFavorite(movieId);
+                btn.classList.remove('active');
+                btn.innerHTML = '<i class="far fa-heart"></i>';
+            } else {
+                storage.addFavorite(movieId);
+                btn.classList.add('active');
+                btn.innerHTML = '<i class="fas fa-heart"></i>';
+            }
+            updateStats();
         }
         
         // Update results counter
@@ -980,8 +1688,6 @@
                 <i class="fas fa-film"></i>
                 <span>Showing ${start}-${end} of ${total} movies</span>
             `;
-            
-            totalMovies.innerHTML = `<i class="fas fa-film"></i> Total Movies: ${total}`;
         }
         
         // Update pagination
@@ -1019,13 +1725,7 @@
                 const firstBtn = document.createElement('button');
                 firstBtn.className = 'page-btn';
                 firstBtn.textContent = '1';
-                firstBtn.addEventListener('click', () => {
-                    currentPage = 1;
-                    displayMovies();
-                    updateResultsCounter();
-                    updatePagination();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
+                firstBtn.addEventListener('click', () => goToPage(1));
                 pagination.appendChild(firstBtn);
                 
                 if (startPage > 2) {
@@ -1042,13 +1742,7 @@
                 const pageBtn = document.createElement('button');
                 pageBtn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
                 pageBtn.textContent = i;
-                pageBtn.addEventListener('click', () => {
-                    currentPage = i;
-                    displayMovies();
-                    updateResultsCounter();
-                    updatePagination();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
+                pageBtn.addEventListener('click', () => goToPage(i));
                 pagination.appendChild(pageBtn);
             }
             
@@ -1065,13 +1759,7 @@
                 const lastBtn = document.createElement('button');
                 lastBtn.className = 'page-btn';
                 lastBtn.textContent = totalPages;
-                lastBtn.addEventListener('click', () => {
-                    currentPage = totalPages;
-                    displayMovies();
-                    updateResultsCounter();
-                    updatePagination();
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
+                lastBtn.addEventListener('click', () => goToPage(totalPages));
                 pagination.appendChild(lastBtn);
             }
             
@@ -1092,6 +1780,14 @@
             pagination.appendChild(nextBtn);
         }
         
+        function goToPage(page) {
+            currentPage = page;
+            displayMovies();
+            updateResultsCounter();
+            updatePagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
         // Setup event listeners
         function setupEventListeners() {
             // Category filter buttons
@@ -1100,7 +1796,7 @@
                     categoryBtns.forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentCategory = btn.dataset.category;
-                    filterMovies();
+                    filterAndSortMovies();
                 });
             });
             
@@ -1114,41 +1810,101 @@
                 });
             });
             
-            // Search functionality
-            searchBtn.addEventListener('click', filterMovies);
-            searchInput.addEventListener('input', filterMovies);
-            
-            // Modal close button
-            closeModal.addEventListener('click', () => {
-                videoModal.style.display = 'none';
-                youtubePlayer.src = '';
+            // Sort select
+            sortSelect.addEventListener('change', (e) => {
+                currentSort = e.target.value;
+                filterAndSortMovies();
             });
             
-            // Close modal on overlay click
-            videoModal.addEventListener('click', (e) => {
-                if (e.target === videoModal) {
-                    videoModal.style.display = 'none';
-                    youtubePlayer.src = '';
+            // Search functionality
+            searchBtn.addEventListener('click', filterAndSortMovies);
+            searchInput.addEventListener('input', filterAndSortMovies);
+            
+            // Modal close buttons
+            closeModal.addEventListener('click', closeVideoModal);
+            closeFavorites.addEventListener('click', () => {
+                favoritesModal.style.display = 'none';
+            });
+            closeDownloadModal.addEventListener('click', () => {
+                downloadModal.style.display = 'none';
+            });
+            
+            // Download button in video modal
+            downloadBtn.addEventListener('click', () => {
+                if (currentMovieId) {
+                    openDownloadModal(currentMovieId);
                 }
             });
             
-            // Close modal on Escape key
+            // Favorite button in video modal
+            favoriteBtn.addEventListener('click', () => {
+                if (currentMovieId) {
+                    if (storage.isFavorite(currentMovieId)) {
+                        storage.removeFavorite(currentMovieId);
+                        favoriteBtn.innerHTML = '<i class="far fa-heart"></i>';
+                    } else {
+                        storage.addFavorite(currentMovieId);
+                        favoriteBtn.innerHTML = '<i class="fas fa-heart"></i>';
+                    }
+                    updateStats();
+                    displayMovies();
+                }
+            });
+            
+            // Show favorites
+            showFavoritesBtn.addEventListener('click', displayFavorites);
+            
+            // Close modals on overlay click
+            videoModal.addEventListener('click', (e) => {
+                if (e.target === videoModal) {
+                    closeVideoModal();
+                }
+            });
+            
+            favoritesModal.addEventListener('click', (e) => {
+                if (e.target === favoritesModal) {
+                    favoritesModal.style.display = 'none';
+                }
+            });
+            
+            downloadModal.addEventListener('click', (e) => {
+                if (e.target === downloadModal) {
+                    downloadModal.style.display = 'none';
+                }
+            });
+            
+            // Close modals on Escape key
             document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape' && videoModal.style.display === 'flex') {
-                    videoModal.style.display = 'none';
-                    youtubePlayer.src = '';
+                if (e.key === 'Escape') {
+                    if (videoModal.style.display === 'flex') closeVideoModal();
+                    if (favoritesModal.style.display === 'flex') favoritesModal.style.display = 'none';
+                    if (downloadModal.style.display === 'flex') downloadModal.style.display = 'none';
                 }
             });
         }
         
-        // Filter movies
-        function filterMovies() {
+        // Filter and sort movies
+        function filterAndSortMovies() {
             const searchTerm = searchInput.value.toLowerCase().trim();
             
+            // Filter
             filteredMovies = movies.filter(movie => {
                 // Category filter
-                if (currentCategory !== 'all' && !movie.genres.includes(currentCategory.charAt(0).toUpperCase() + currentCategory.slice(1))) {
-                    return false;
+                if (currentCategory !== 'all') {
+                    const categoryMap = {
+                        'action': 'Action',
+                        'drama': 'Drama',
+                        'comedy': 'Comedy',
+                        'sci-fi': 'Sci-Fi',
+                        'thriller': 'Thriller',
+                        'animation': 'Animation',
+                        'adventure': 'Adventure',
+                        'romance': 'Romance',
+                        'horror': 'Horror'
+                    };
+                    if (!movie.genres.includes(categoryMap[currentCategory])) {
+                        return false;
+                    }
                 }
                 
                 // Search filter
@@ -1162,6 +1918,22 @@
                 return true;
             });
             
+            // Sort
+            switch (currentSort) {
+                case 'title':
+                    filteredMovies.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+                case 'year-new':
+                    filteredMovies.sort((a, b) => b.year - a.year);
+                    break;
+                case 'year-old':
+                    filteredMovies.sort((a, b) => a.year - b.year);
+                    break;
+                case 'rating':
+                    filteredMovies.sort((a, b) => b.rating - a.rating);
+                    break;
+            }
+            
             currentPage = 1;
             displayMovies();
             updateResultsCounter();
@@ -1172,12 +1944,14 @@
         function resetFilters() {
             searchInput.value = '';
             currentCategory = 'all';
+            currentSort = 'default';
             currentPage = 1;
+            sortSelect.value = 'default';
             
             categoryBtns.forEach(b => b.classList.remove('active'));
             document.querySelector('[data-category="all"]').classList.add('active');
             
-            filterMovies();
+            filterAndSortMovies();
         }
         
         // Apply view mode
@@ -1200,9 +1974,33 @@
             const movie = movies.find(m => m.id === movieId);
             if (!movie) return;
             
+            currentMovieId = movieId;
+            storage.addToHistory(movieId);
+            updateStats();
+            
             modalTitle.textContent = movie.title;
+            modalInfo.innerHTML = `
+                <strong>${movie.title}</strong> (${movie.year})<br>
+                ${movie.genres.join(', ')} • ${movie.duration} • Rating: ${movie.rating}/10<br>
+                ${movie.description}
+            `;
             youtubePlayer.src = `https://www.youtube.com/embed/${movie.youtubeId}?autoplay=1&rel=0&modestbranding=1`;
+            
+            // Update favorite button
+            if (storage.isFavorite(movieId)) {
+                favoriteBtn.innerHTML = '<i class="fas fa-heart"></i>';
+            } else {
+                favoriteBtn.innerHTML = '<i class="far fa-heart"></i>';
+            }
+            
             videoModal.style.display = 'flex';
+        }
+        
+        // Close video modal
+        function closeVideoModal() {
+            videoModal.style.display = 'none';
+            youtubePlayer.src = '';
+            currentMovieId = null;
         }
         
         // Open movie on YouTube
@@ -1210,7 +2008,66 @@
             const movie = movies.find(m => m.id === movieId);
             if (!movie) return;
             
+            storage.addToHistory(movieId);
+            updateStats();
             window.open(`https://www.youtube.com/watch?v=${movie.youtubeId}`, '_blank');
+        }
+        
+        // Open download modal
+        function openDownloadModal(movieId) {
+            const movie = movies.find(m => m.id === movieId);
+            if (!movie) return;
+            
+            storage.addDownload(movieId);
+            updateStats();
+            
+            const youtubeUrl = `https://www.youtube.com/watch?v=${movie.youtubeId}`;
+            
+            document.getElementById('downloadLink1').href = youtubeUrl;
+            document.getElementById('downloadLink2').href = `https://www.y2mate.com/youtube/${movie.youtubeId}`;
+            document.getElementById('downloadLink3').href = `https://savefrom.net/#url=${encodeURIComponent(youtubeUrl)}`;
+            
+            downloadModal.style.display = 'flex';
+        }
+        
+        // Display favorites
+        function displayFavorites() {
+            favoritesList.innerHTML = '';
+            
+            if (storage.favorites.length === 0) {
+                favoritesList.innerHTML = `
+                    <div class="empty-favorites">
+                        <i class="fas fa-heart"></i>
+                        <h3>No favorites yet</h3>
+                        <p>Start adding movies to your favorites list!</p>
+                    </div>
+                `;
+            } else {
+                storage.favorites.forEach(movieId => {
+                    const movie = movies.find(m => m.id === movieId);
+                    if (!movie) return;
+                    
+                    const favItem = document.createElement('div');
+                    favItem.className = 'favorite-item';
+                    favItem.innerHTML = `
+                        <img src="${movie.thumbnail}" alt="${movie.title}">
+                        <div class="favorite-item-info">
+                            <div class="favorite-item-title">${movie.title}</div>
+                            <div class="favorite-item-actions">
+                                <button class="favorite-item-btn" onclick="openMovieModal(${movie.id}); favoritesModal.style.display='none';">
+                                    <i class="fas fa-play"></i> Watch
+                                </button>
+                                <button class="favorite-item-btn" onclick="storage.removeFavorite(${movie.id}); displayFavorites(); updateStats(); displayMovies();">
+                                    <i class="fas fa-trash"></i> Remove
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                    favoritesList.appendChild(favItem);
+                });
+            }
+            
+            favoritesModal.style.display = 'flex';
         }
     </script>
 </body>
